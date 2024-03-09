@@ -20,6 +20,12 @@ class AExpeditionist_ReduxCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+
+public:
+	AExpeditionist_ReduxCharacter();
+
+private:
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -35,27 +41,29 @@ class AExpeditionist_ReduxCharacter : public ACharacter
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* JumpAction;
+	/** Called for movement input */
 
+	void Move(const FInputActionValue& Value);
 	/** Move Input Action */
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
+
+	/** Called for looking input */
+	void Look(const FInputActionValue& Value);
+
+	/** Climb Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ClimbAction;
+
+	/** Called for climbing input */
+	void OnClimbActionStated(const FInputActionValue& Value);
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
-public:
-	AExpeditionist_ReduxCharacter();
 	
-
-protected:
-
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
-
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
-			
 
 protected:
 	// APawn interface

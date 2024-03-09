@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "DebugHelper.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -67,6 +68,7 @@ void AExpeditionist_ReduxCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -86,6 +88,9 @@ void AExpeditionist_ReduxCharacter::SetupPlayerInputComponent(UInputComponent* P
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AExpeditionist_ReduxCharacter::Look);
+
+		// Climbing
+		EnhancedInputComponent->BindAction(ClimbAction, ETriggerEvent::Started, this, &AExpeditionist_ReduxCharacter::OnClimbActionStated);
 	}
 	else
 	{
@@ -127,4 +132,9 @@ void AExpeditionist_ReduxCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AExpeditionist_ReduxCharacter::OnClimbActionStated(const FInputActionValue& Value)
+{
+	Debug::Print(TEXT("Climb Action Started"));
 }
