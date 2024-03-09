@@ -14,11 +14,17 @@ class EXPEDITIONIST_REDUX_API UCustomMovementComponent : public UCharacterMoveme
 {
 	GENERATED_BODY()
 	
-private:
+	public:
+		virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+
+
+	private:
 #pragma region ClimbTraces
 
 	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false);
 #pragma endregion
+
 
 #pragma region ClimbVariables
 
@@ -30,5 +36,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
 	float ClimbCapsuleTraceHalfHeight = 72.0f;
+#pragma endregion
+
+
+#pragma region ClimbCore
+
+	void TraceClimbableSurfaces();
 #pragma endregion
 };

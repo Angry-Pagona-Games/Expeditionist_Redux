@@ -4,7 +4,14 @@
 #include "Components/CustomMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	TraceClimbableSurfaces();
+}
+
 #pragma region ClimbTraces
+
 TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape)
 {
 	TArray<FHitResult> OutCapsuleTraceHits;
@@ -23,5 +30,19 @@ TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const F
 	);
 
 	return OutCapsuleTraceHits;
+}
+
+
+
+#pragma endregion
+
+#pragma region ClimbCore
+void UCustomMovementComponent::TraceClimbableSurfaces()
+{
+	const FVector StartOffset = UpdatedComponent->GetForwardVector() * 30.0f;
+	const FVector Start = UpdatedComponent->GetComponentLocation() + StartOffset;
+	const FVector End = Start + (UpdatedComponent->GetUpVector());
+
+	DoCapsuleTraceMultiByObject(Start, End, true);
 }
 #pragma endregion
