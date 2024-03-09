@@ -31,9 +31,6 @@ TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const F
 
 	return OutCapsuleTraceHits;
 }
-
-
-
 #pragma endregion
 
 #pragma region ClimbCore
