@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CustomMovementComponent.generated.h"
 
+
 /**
  * 
  */
@@ -21,13 +22,14 @@ private:
 #pragma region ClimbTraces
 
 	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false);
-
+	FHitResult DoCapsuleTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = true);
 #pragma endregion
 
 
 #pragma region ClimbCore
 
 	void TraceClimbableSurfaces();
+	void TraceFromEyeHeight(float TraceDistance, float TraceStartOffset = 0.f);
 
 #pragma endregion
 
