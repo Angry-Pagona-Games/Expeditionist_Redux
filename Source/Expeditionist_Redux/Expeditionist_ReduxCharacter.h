@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "Expeditionist_ReduxCharacter.generated.h"
 
+class UCustomMovementComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -22,9 +23,12 @@ class AExpeditionist_ReduxCharacter : public ACharacter
 
 
 public:
-	AExpeditionist_ReduxCharacter();
+	AExpeditionist_ReduxCharacter(const FObjectInitializer& ObjectInitializer);
 
 private:
+	/** Custom Movement Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UCustomMovementComponent* CustomMovementComponent;
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -34,6 +38,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 	
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
@@ -77,5 +82,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	/** Returns CustomMovementComponent subobject **/
+	FORCEINLINE class UCustomMovementComponent* GetCustomMovementComponent() const { return CustomMovementComponent; }
 };
 
