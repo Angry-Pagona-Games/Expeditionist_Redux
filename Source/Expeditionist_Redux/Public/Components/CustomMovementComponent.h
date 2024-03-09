@@ -17,8 +17,6 @@ class EXPEDITIONIST_REDUX_API UCustomMovementComponent : public UCharacterMoveme
 	public:
 		virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-
-
 	private:
 #pragma region ClimbTraces
 
@@ -26,21 +24,22 @@ class EXPEDITIONIST_REDUX_API UCustomMovementComponent : public UCharacterMoveme
 #pragma endregion
 
 
+#pragma region ClimbCore
+
+	void TraceClimbableSurfaces();
+#pragma endregion
+
 #pragma region ClimbVariables
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
 	TArray<TEnumAsByte<EObjectTypeQuery>> ClimbSurfaceTraceTypes;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta= (AllowPrivateAccess = "true"))
-	float ClimbTraceRadius = 50.0f;
+	float ClimbCapsuleTraceRadius = 50.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
 	float ClimbCapsuleTraceHalfHeight = 72.0f;
 #pragma endregion
 
 
-#pragma region ClimbCore
-
-	void TraceClimbableSurfaces();
-#pragma endregion
 };
