@@ -14,19 +14,21 @@ class EXPEDITIONIST_REDUX_API UCustomMovementComponent : public UCharacterMoveme
 {
 	GENERATED_BODY()
 	
-	public:
-		virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	private:
+public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+private:
 #pragma region ClimbTraces
 
 	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false);
+
 #pragma endregion
 
 
 #pragma region ClimbCore
 
 	void TraceClimbableSurfaces();
+
 #pragma endregion
 
 #pragma region ClimbVariables

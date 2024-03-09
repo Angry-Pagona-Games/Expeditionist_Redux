@@ -19,6 +19,7 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape)
 {
 	TArray<FHitResult> OutCapsuleTraceHitResults;
+
 	UKismetSystemLibrary::CapsuleTraceMultiForObjects(
 		this,
 		Start,
