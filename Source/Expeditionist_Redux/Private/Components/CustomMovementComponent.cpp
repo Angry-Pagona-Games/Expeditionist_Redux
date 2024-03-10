@@ -173,8 +173,8 @@ void UCustomMovementComponent::PhysClimbing(float deltaTime, int32 Iterations)
 		return;
 	}
 	//Process the Climbable Surface Info 
-
-
+	TraceClimbableSurfaces();
+	ProcessClimbableSurfaceInfo();
 	/*Check if player should start Climing*/
 	RestorePreAdditiveRootMotionVelocity();
 
@@ -208,6 +208,23 @@ void UCustomMovementComponent::PhysClimbing(float deltaTime, int32 Iterations)
 	/*Snap Movement to Climbable Surfaces*/
 }
 
+void UCustomMovementComponent::ProcessClimbableSurfaceInfo()
+{
+	CurrentClimbableSurfaceLocation = FVector::ZeroVector;	
+	CurrentClimbableSurfaceNormal = FVector::ZeroVector;
+
+	if (ClimbableSurfacesTracedResults.IsEmpty()) return;
+	
+//Get the average location and normal of the climbable surfaces
+	for (const FHitResult& TracedHitResult: ClimbableSurfacesTracedResults)
+	{
+		CurrentClimbableSurfaceLocation += TracedHitResult.ImpactPoint;
+		CurrentClimbableSurfaceNormal += TracedHitResult.ImpactNormal;
+	}
+	CurrentClimbableSurfaceLocation /= ClimbableSurfacesTracedResults.Num();
+	CurrentClimbableSurfaceNormal = CurrentClimbableSurfaceNormal.GetSafeNormal();
+}
+
 bool UCustomMovementComponent::IsClimbing() const
 {
 	return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Climbing;
@@ -220,7 +237,7 @@ bool UCustomMovementComponent::TraceClimbableSurfaces()
 	const FVector Start = UpdatedComponent->GetComponentLocation() + StartOffset;
 	const FVector End = Start + (UpdatedComponent->GetForwardVector());
 
-	ClimbableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true, true);
+	ClimbableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true);
 
 	return !ClimbableSurfacesTracedResults.IsEmpty();
 }
