@@ -19,24 +19,23 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 #pragma region Override Functions
 void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
 {
-		Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+		//Debug::Print(TEXT("Movement Mode Changed"));
 
-		if (IsClimbing())
-		{
-			Debug::Print(TEXT("Climbing"));
-			bOrientRotationToMovement = false;
-			CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(48.0f);
-		}
+	if (IsClimbing())
+	{
+		bOrientRotationToMovement = false;
+		CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(48.f);
+	}
 
-		if (PreviousCustomMode == MOVE_Custom && ECustomMovementMode::MOVE_Climbing)
-		{
-			Debug::Print(TEXT("Stopped Climbing"));
-			bOrientRotationToMovement = true;
-			CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f);
-			StopMovementImmediately();
-		}
+	if (PreviousMovementMode == MOVE_Custom && PreviousCustomMode == ECustomMovementMode::MOVE_Climbing)
+	{
+		bOrientRotationToMovement = true;
+		CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.f);
 
-		Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+		StopMovementImmediately();
+	}
+
+	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 		
 }
 
@@ -184,7 +183,7 @@ void UCustomMovementComponent::StartClimbing()
 
 void UCustomMovementComponent::StopClimbing()
 {
-		// Set the movement mode to walking
+		// Set the movement mode to falling
 	SetMovementMode(MOVE_Falling);
 }
 
@@ -277,13 +276,15 @@ void UCustomMovementComponent::SnapMovementToClimbableSurface(float DeltaTime)
 	const FVector ComponentForward = UpdatedComponent->GetForwardVector();
 	const FVector ComponentLocation = UpdatedComponent->GetComponentLocation();
 
-	const FVector ProjectedCharactertoSurface =
+	const FVector ProjectedCharacterToSurface =
 		(CurrentClimbableSurfaceLocation - ComponentLocation).ProjectOnTo(ComponentForward);
 
-	const FVector SnapVector = -CurrentClimbableSurfaceLocation * ProjectedCharactertoSurface.Length();
+	const FVector SnapVector = -CurrentClimbableSurfaceNormal * ProjectedCharacterToSurface.Length();
 
-	UpdatedComponent->MoveComponent(SnapVector * DeltaTime * MaxClimbSpeed, UpdatedComponent->GetComponentQuat(), true);
-
+	UpdatedComponent->MoveComponent(
+		SnapVector * DeltaTime * MaxClimbSpeed,
+		UpdatedComponent->GetComponentQuat(),
+		true);
 }
 
 bool UCustomMovementComponent::IsClimbing() const
