@@ -32,6 +32,10 @@ void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 		bOrientRotationToMovement = true;
 		CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.f);
 
+		//Reset the rotation of the character to standing position
+		const FRotator DirtyRoation = UpdatedComponent->GetComponentRotation();
+		const FRotator CleanStandRotation = FRotator(0.0f, DirtyRoation.Yaw, 0.0f);
+		UpdatedComponent->SetRelativeRotation(CleanStandRotation.Quaternion());
 		StopMovementImmediately();
 	}
 

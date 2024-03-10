@@ -105,8 +105,24 @@ void AExpeditionist_ReduxCharacter::SetupPlayerInputComponent(UInputComponent* P
 
 void AExpeditionist_ReduxCharacter::Move(const FInputActionValue& Value)
 {
+	if(!CustomMovementComponent) return;
+
+	if (CustomMovementComponent->IsClimbing())
+	{
+		HandleClimbingMovement(Value);
+	}
+	else
+	{
+		HandlleGroundedMovement(Value);
+	}	
+
+}
+
+void AExpeditionist_ReduxCharacter::HandlleGroundedMovement(const FInputActionValue& Value)
+{
+
 	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
@@ -116,7 +132,7 @@ void AExpeditionist_ReduxCharacter::Move(const FInputActionValue& Value)
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
+
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
@@ -124,6 +140,23 @@ void AExpeditionist_ReduxCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+void AExpeditionist_ReduxCharacter::HandleClimbingMovement(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+	
+	// get forward vector
+	const FVector ForwardDirection = FVector::CrossProduct(-CustomMovementComponent->GetCurrentClimbableSurfaceNormal(), GetActorRightVector());
+
+	// get right vector
+	const FVector RightDirection = FVector::CrossProduct(-CustomMovementComponent->GetCurrentClimbableSurfaceNormal(), -GetActorUpVector());
+
+	// add movement
+	AddMovementInput(ForwardDirection, MovementVector.Y);	
+	AddMovementInput(RightDirection, MovementVector.X);
+
 }
 
 void AExpeditionist_ReduxCharacter::Look(const FInputActionValue& Value)

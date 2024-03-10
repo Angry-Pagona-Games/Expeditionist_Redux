@@ -51,6 +51,11 @@ private:
 	void Move(const FInputActionValue& Value);
 	/** Move Input Action */
 
+	void HandlleGroundedMovement(const FInputActionValue& Value);
+
+	void HandleClimbingMovement(const FInputActionValue& Value);
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
