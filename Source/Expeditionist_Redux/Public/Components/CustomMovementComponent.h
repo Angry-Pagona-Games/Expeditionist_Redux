@@ -53,6 +53,7 @@ private:
 	void PhysClimbing(float deltaTime, int32 Iterations);
 	void ProcessClimbableSurfaceInfo();
 	FQuat GetClimbingRotation(float DeltaTime) const;
+	void SnapMovementToClimbableSurface(float DeltaTime);
 #pragma endregion
 
 #pragma region ClimbCoreVariables

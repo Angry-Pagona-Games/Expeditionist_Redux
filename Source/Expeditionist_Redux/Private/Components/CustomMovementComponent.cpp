@@ -224,6 +224,8 @@ void UCustomMovementComponent::PhysClimbing(float deltaTime, int32 Iterations)
 		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
 	}
 	/*Snap Movement to Climbable Surfaces*/
+	SnapMovementToClimbableSurface(deltaTime);
+
 }
 
 void UCustomMovementComponent::ProcessClimbableSurfaceInfo()
@@ -262,6 +264,18 @@ FQuat UCustomMovementComponent::GetClimbingRotation(float DeltaTime) const
 	 
 }
 
+void UCustomMovementComponent::SnapMovementToClimbableSurface(float DeltaTime)
+{
+	const FVector ComponentForward = UpdatedComponent->GetForwardVector();
+	const FVector ComponentLocation = UpdatedComponent->GetComponentLocation();
+
+	const FVector ProjectedCharactertoSurface = 
+		(CurrentClimbableSurfaceLocation - ComponentLocation).ProjectOnTo(ComponentForward);
+
+	const FVector SnapVector = -CurrentClimbableSurfaceLocation * ProjectedCharactertoSurface.Length();
+
+	UpdatedComponent->MoveComponent(SnapVector * DeltaTime * MaxClimbSpeed, UpdatedComponent->GetComponentQuat(), true);
+}
 bool UCustomMovementComponent::IsClimbing() const
 {
 	return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Climbing;
