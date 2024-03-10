@@ -141,5 +141,17 @@ void AExpeditionist_ReduxCharacter::Look(const FInputActionValue& Value)
 
 void AExpeditionist_ReduxCharacter::OnClimbActionStated(const FInputActionValue& Value)
 {
-	Debug::Print(TEXT("Climb Action Started"));
+	if (!CustomMovementComponent) return;
+
+	if (!CustomMovementComponent->IsClimbing())
+	{
+		CustomMovementComponent->ToggleClimbing(true);
+		Debug::Print(TEXT("Climb Action Started"));
+	}
+	else
+	{
+		CustomMovementComponent->ToggleClimbing(false);
+		Debug::Print(TEXT("Not Climbing"));
+	}
+	
 }
