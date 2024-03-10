@@ -11,8 +11,7 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	//TODO: Implement climbing logic From Lesson 14
-	
+
 	
 	//TraceClimbableSurfaces();
 	//TraceFromEyeHeight(100.0f);
@@ -58,7 +57,11 @@ float UCustomMovementComponent::GetMaxSpeed() const
 	{
 		return MaxClimbSpeed;
 	}
-	return Super::GetMaxSpeed();
+	else
+	{
+		return Super::GetMaxSpeed();
+	}
+
 }
 
 float UCustomMovementComponent::GetMaxAcceleration() const
@@ -67,7 +70,10 @@ float UCustomMovementComponent::GetMaxAcceleration() const
 	{
 		return MaxClimbAcceleration;
 	}
-	return Super::GetMaxAcceleration();
+	else
+	{
+		return Super::GetMaxAcceleration();
+	}
 }
 
 #pragma endregion
@@ -85,7 +91,7 @@ TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const F
 	{
 		DebugTraceType = EDrawDebugTrace::ForDuration;
 	}
-
+	
 	UKismetSystemLibrary::CapsuleTraceMultiForObjects(
 		this,
 		Start,
@@ -140,7 +146,7 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimbing)
 		{
 			// Start climbing
 			Debug::Print(TEXT("Can Start Climbing"));
-			StartClimbing(ClimbableSurfacesTracedResults[0]);
+			StartClimbing();
 		}
 		else
 		{
@@ -170,11 +176,10 @@ bool UCustomMovementComponent::bCanStartClimbing()
 
 }
 
-void UCustomMovementComponent::StartClimbing(const FHitResult& HitResult)
+void UCustomMovementComponent::StartClimbing()
 {
-		// Set the movement mode to climbing
+	// Set the movement mode to climbing
 	SetMovementMode(MOVE_Custom, ECustomMovementMode::MOVE_Climbing);
-
 }
 
 void UCustomMovementComponent::StopClimbing()
@@ -193,7 +198,10 @@ void UCustomMovementComponent::PhysClimbing(float deltaTime, int32 Iterations)
 	//Process the Climbable Surface Info 
 	TraceClimbableSurfaces();
 	ProcessClimbableSurfaceInfo();
+	
 	/*Check if player should start Climing*/
+
+
 	RestorePreAdditiveRootMotionVelocity();
 
 	if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
@@ -249,7 +257,7 @@ void UCustomMovementComponent::ProcessClimbableSurfaceInfo()
 
 }
 
-FQuat UCustomMovementComponent::GetClimbingRotation(float DeltaTime) const
+FQuat UCustomMovementComponent::GetClimbingRotation(float DeltaTime) 
 {
 	const FQuat CurrentQuat = UpdatedComponent->GetComponentQuat();
 	if (HasAnimRootMotion() || CurrentRootMotion.HasOverrideVelocity())
@@ -269,13 +277,15 @@ void UCustomMovementComponent::SnapMovementToClimbableSurface(float DeltaTime)
 	const FVector ComponentForward = UpdatedComponent->GetForwardVector();
 	const FVector ComponentLocation = UpdatedComponent->GetComponentLocation();
 
-	const FVector ProjectedCharactertoSurface = 
+	const FVector ProjectedCharactertoSurface =
 		(CurrentClimbableSurfaceLocation - ComponentLocation).ProjectOnTo(ComponentForward);
 
 	const FVector SnapVector = -CurrentClimbableSurfaceLocation * ProjectedCharactertoSurface.Length();
 
 	UpdatedComponent->MoveComponent(SnapVector * DeltaTime * MaxClimbSpeed, UpdatedComponent->GetComponentQuat(), true);
+
 }
+
 bool UCustomMovementComponent::IsClimbing() const
 {
 	return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Climbing;

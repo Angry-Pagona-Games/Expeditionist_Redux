@@ -48,11 +48,11 @@ private:
 	bool TraceClimbableSurfaces();
 	FHitResult TraceFromEyeHeight(float TraceDistance, float TraceStartOffset = 0.f);
 	bool bCanStartClimbing();
-	void StartClimbing(const FHitResult& HitResult);
+	void StartClimbing();
 	void StopClimbing();
 	void PhysClimbing(float deltaTime, int32 Iterations);
 	void ProcessClimbableSurfaceInfo();
-	FQuat GetClimbingRotation(float DeltaTime) const;
+	FQuat GetClimbingRotation(float DeltaTime);
 	void SnapMovementToClimbableSurface(float DeltaTime);
 #pragma endregion
 
