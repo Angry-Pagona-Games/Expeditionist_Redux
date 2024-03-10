@@ -29,7 +29,7 @@ void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 			CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(48.0f);
 		}
 
-		if (PreviousCustomMode == ECustomMovementMode::MOVE_Climbing)
+		if (PreviousCustomMode == MOVE_Custom && ECustomMovementMode::MOVE_Climbing)
 		{
 			Debug::Print(TEXT("Stopped Climbing"));
 			bOrientRotationToMovement = true;
@@ -50,6 +50,24 @@ void UCustomMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 	
 		Super::PhysCustom(deltaTime, Iterations);
 	
+}
+
+float UCustomMovementComponent::GetMaxSpeed() const
+{
+	if (IsClimbing())
+	{
+		return MaxClimbSpeed;
+	}
+	return Super::GetMaxSpeed();
+}
+
+float UCustomMovementComponent::GetMaxAcceleration() const
+{
+	if (IsClimbing())
+	{
+		return MaxClimbAcceleration;
+	}
+	return Super::GetMaxAcceleration();
 }
 
 #pragma endregion
@@ -162,7 +180,7 @@ void UCustomMovementComponent::StartClimbing(const FHitResult& HitResult)
 void UCustomMovementComponent::StopClimbing()
 {
 		// Set the movement mode to walking
-	SetMovementMode(MOVE_Walking);
+	SetMovementMode(MOVE_Falling);
 }
 
 void UCustomMovementComponent::PhysClimbing(float deltaTime, int32 Iterations)
@@ -191,7 +209,7 @@ void UCustomMovementComponent::PhysClimbing(float deltaTime, int32 Iterations)
 	FHitResult Hit(1.f);
 
 	/*Handle Climb Rotation*/
-	SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
+	SafeMoveUpdatedComponent(Adjusted, GetClimbingRotation(deltaTime), true, Hit);
 
 	if (Hit.Time < 1.f)
 	{
@@ -224,9 +242,24 @@ void UCustomMovementComponent::ProcessClimbableSurfaceInfo()
 	CurrentClimbableSurfaceLocation /= ClimbableSurfacesTracedResults.Num();
 	CurrentClimbableSurfaceNormal = CurrentClimbableSurfaceNormal.GetSafeNormal();
 
-	Debug::Print(TEXT("Climbable Surface Location: %s")+ CurrentClimbableSurfaceLocation.ToString(), FColor::Cyan, 1);
-	Debug::Print(TEXT("Climbable Surface Normal: %s") + CurrentClimbableSurfaceNormal.ToString(), FColor::Blue, 1);
+	//Debug::Print(TEXT("Climbable Surface Location: %s")+ CurrentClimbableSurfaceLocation.ToString(), FColor::Cyan, 1);
+	//Debug::Print(TEXT("Climbable Surface Normal: %s") + CurrentClimbableSurfaceNormal.ToString(), FColor::Blue, 1);
 
+}
+
+FQuat UCustomMovementComponent::GetClimbingRotation(float DeltaTime) const
+{
+	const FQuat CurrentQuat = UpdatedComponent->GetComponentQuat();
+	if (HasAnimRootMotion() || CurrentRootMotion.HasOverrideVelocity())
+	{
+		return CurrentQuat;
+	}
+
+	//const FQuat TargetQuat = FQuat::Slerp(CurrentQuat, CurrentClimbableSurfaceNormal.ToOrientationQuat(), DeltaTime * 10.0f);
+	const FQuat TargetQuat = FRotationMatrix::MakeFromX(-CurrentClimbableSurfaceNormal).ToQuat();
+	
+	return FMath::QInterpTo(CurrentQuat, TargetQuat, DeltaTime, 5.0f);
+	 
 }
 
 bool UCustomMovementComponent::IsClimbing() const

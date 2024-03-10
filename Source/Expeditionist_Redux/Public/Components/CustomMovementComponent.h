@@ -30,6 +30,8 @@ protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
+	virtual float GetMaxSpeed() const override;
+	virtual float GetMaxAcceleration() const override;
 
 #pragma endregion
 
@@ -50,6 +52,8 @@ private:
 	void StopClimbing();
 	void PhysClimbing(float deltaTime, int32 Iterations);
 	void ProcessClimbableSurfaceInfo();
+	FQuat GetClimbingRotation(float DeltaTime) const;
+#pragma endregion
 
 #pragma region ClimbCoreVariables
 
@@ -74,7 +78,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
 	float MaxBreakClimbDeceleration= 100.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
+	float MaxClimbSpeed = 100.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Movement: Climbing", meta = (AllowPrivateAccess = "true"))
+	float MaxClimbAcceleration = 300.f;
+		
 #pragma endregion
 
 public:
