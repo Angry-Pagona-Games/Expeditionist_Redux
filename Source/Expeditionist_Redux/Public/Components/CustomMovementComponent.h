@@ -52,6 +52,7 @@ private:
 	void StopClimbing();
 	void PhysClimbing(float deltaTime, int32 Iterations);
 	void ProcessClimbableSurfaceInfo();
+	bool CheckShouldStopClimbing();
 	FQuat GetClimbingRotation(float DeltaTime);
 	void SnapMovementToClimbableSurface(float DeltaTime);
 #pragma endregion
