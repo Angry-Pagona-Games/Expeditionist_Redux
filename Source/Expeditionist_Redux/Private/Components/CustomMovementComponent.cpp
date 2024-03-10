@@ -9,7 +9,10 @@
 void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
+	//TODO: Implement climbing logic From Lesson 14
+	
+	
 	//TraceClimbableSurfaces();
 	//TraceFromEyeHeight(100.0f);
 }
