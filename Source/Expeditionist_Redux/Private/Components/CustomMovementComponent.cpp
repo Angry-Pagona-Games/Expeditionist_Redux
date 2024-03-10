@@ -4,6 +4,7 @@
 #include "Components/CustomMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Expeditionist_Redux/Expeditionist_ReduxCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "Expeditionist_Redux/DebugHelper.h"
 
 void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -16,8 +17,42 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	//TraceClimbableSurfaces();
 	//TraceFromEyeHeight(100.0f);
 }
+#pragma region Override Functions
+void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
+{
+		Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 
+		if (IsClimbing())
+		{
+			Debug::Print(TEXT("Climbing"));
+			bOrientRotationToMovement = false;
+			CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(48.0f);
+		}
 
+		if (PreviousCustomMode == ECustomMovementMode::MOVE_Climbing)
+		{
+			Debug::Print(TEXT("Stopped Climbing"));
+			bOrientRotationToMovement = true;
+			CharacterOwner->GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f);
+			StopMovementImmediately();
+		}
+
+		Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+		
+}
+
+void UCustomMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
+{
+	if (IsClimbing())
+	{
+		PhysClimbing(deltaTime, Iterations);	
+	}
+	
+		Super::PhysCustom(deltaTime, Iterations);
+	
+}
+
+#pragma endregion
 #pragma region ClimbTraces
 TArray<FHitResult> UCustomMovementComponent::DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End, bool bShowDebugShape, bool bDrawPersistantShapes)
 {
@@ -87,6 +122,7 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimbing)
 		{
 			// Start climbing
 			Debug::Print(TEXT("Can Start Climbing"));
+			StartClimbing(ClimbableSurfacesTracedResults[0]);
 		}
 		else
 		{
@@ -97,6 +133,7 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimbing)
 	else
 	{
 		// Stop climbing
+		StopClimbing();
 	}
 }
 
@@ -113,6 +150,62 @@ bool UCustomMovementComponent::bCanStartClimbing()
 
 	return true;
 
+}
+
+void UCustomMovementComponent::StartClimbing(const FHitResult& HitResult)
+{
+		// Set the movement mode to climbing
+	SetMovementMode(MOVE_Custom, ECustomMovementMode::MOVE_Climbing);
+
+}
+
+void UCustomMovementComponent::StopClimbing()
+{
+		// Set the movement mode to walking
+	SetMovementMode(MOVE_Walking);
+}
+
+void UCustomMovementComponent::PhysClimbing(float deltaTime, int32 Iterations)
+{
+
+	if (deltaTime < MIN_TICK_TIME)
+	{
+		return;
+	}
+	//Process the Climbable Surface Info 
+
+
+	/*Check if player should start Climing*/
+	RestorePreAdditiveRootMotionVelocity();
+
+	if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+	{
+		/*Define max Climb Speed and acceleration*/
+		CalcVelocity(deltaTime, 0.f, true, MaxBreakClimbDeceleration);
+	}
+
+	ApplyRootMotionToVelocity(deltaTime);
+
+	FVector OldLocation = UpdatedComponent->GetComponentLocation();
+	const FVector Adjusted = Velocity * deltaTime;
+	FHitResult Hit(1.f);
+
+	/*Handle Climb Rotation*/
+	SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
+
+	if (Hit.Time < 1.f)
+	{
+		//adjust and try again
+		HandleImpact(Hit, deltaTime, Adjusted);
+		SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
+
+	}
+
+	if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+	{
+		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+	}
+	/*Snap Movement to Climbable Surfaces*/
 }
 
 bool UCustomMovementComponent::IsClimbing() const
