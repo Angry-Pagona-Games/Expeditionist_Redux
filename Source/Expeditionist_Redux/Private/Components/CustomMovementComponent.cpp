@@ -19,7 +19,6 @@ void UCustomMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 #pragma region Override Functions
 void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
 {
-		//Debug::Print(TEXT("Movement Mode Changed"));
 
 	if (IsClimbing())
 	{
@@ -148,13 +147,13 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimbing)
 		if (bCanStartClimbing())
 		{
 			// Start climbing
-			Debug::Print(TEXT("Can Start Climbing"));
+			
 			StartClimbing();
 		}
 		else
 		{
 			// Disable climbing
-			Debug::Print(TEXT("Cannot Start Climbing"));
+			
 		}
 	}
 	else
@@ -258,9 +257,6 @@ void UCustomMovementComponent::ProcessClimbableSurfaceInfo()
 	}
 	CurrentClimbableSurfaceLocation /= ClimbableSurfacesTracedResults.Num();
 	CurrentClimbableSurfaceNormal = CurrentClimbableSurfaceNormal.GetSafeNormal();
-
-	//Debug::Print(TEXT("Climbable Surface Location: %s")+ CurrentClimbableSurfaceLocation.ToString(), FColor::Cyan, 1);
-	//Debug::Print(TEXT("Climbable Surface Normal: %s") + CurrentClimbableSurfaceNormal.ToString(), FColor::Blue, 1);
 
 }
 
