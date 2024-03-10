@@ -223,6 +223,10 @@ void UCustomMovementComponent::ProcessClimbableSurfaceInfo()
 	}
 	CurrentClimbableSurfaceLocation /= ClimbableSurfacesTracedResults.Num();
 	CurrentClimbableSurfaceNormal = CurrentClimbableSurfaceNormal.GetSafeNormal();
+
+	Debug::Print(TEXT("Climbable Surface Location: %s")+ CurrentClimbableSurfaceLocation.ToString(), FColor::Cyan, 1);
+	Debug::Print(TEXT("Climbable Surface Normal: %s") + CurrentClimbableSurfaceNormal.ToString(), FColor::Blue, 1);
+
 }
 
 bool UCustomMovementComponent::IsClimbing() const
