@@ -11,6 +11,7 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 	ExpeditionistCharacter = Cast<AExpeditionist_ReduxCharacter>(TryGetPawnOwner());
+	
 	if (ExpeditionistCharacter)
 	{
 		CustomMovementComponent = ExpeditionistCharacter->GetCustomMovementComponent();
@@ -44,6 +45,7 @@ void UCharacterAnimInstance::GetAirSpeed()
 
 void UCharacterAnimInstance::GetShouldMove()
 {
+	bShouldMove =
 	CustomMovementComponent->GetCurrentAcceleration().Size() > 0 &&
 		GroundSpeed > 5.f &&
 		!bIsFalling;
