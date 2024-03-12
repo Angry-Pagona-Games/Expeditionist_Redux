@@ -203,3 +203,5 @@ Content/StarterContent
 # never include zip or other compressed files
 .zip
 .rar
+
+Content/Characters/Animations/RawAnimations/BadImport/
